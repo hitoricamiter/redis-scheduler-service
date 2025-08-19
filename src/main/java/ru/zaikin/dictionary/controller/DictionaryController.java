@@ -1,22 +1,22 @@
-package ru.zaikin.dictionary.controller;
+package ru.zaikin.Dictionary.Application.controller;
 
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.zaikin.dictionary.service.DictionaryService;
+import ru.zaikin.Dictionary.Application.service.DictionaryService;
 
 @RestController
+@RequestMapping("/dictionary")
+@RequiredArgsConstructor
 public class DictionaryController {
 
+    private final DictionaryService service;
 
-    private final DictionaryService dictionaryService;
-
-    public DictionaryController(DictionaryService dictionaryService) {
-        this.dictionaryService = dictionaryService;
-    }
-
-    @GetMapping("/translate")
-    public String translate(@RequestParam String word) {
-        return dictionaryService.translate(word);
+    @GetMapping("/{russian}")
+    public String translate(@PathVariable String russian) {
+        return service.translate(russian);
     }
 }

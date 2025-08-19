@@ -1,22 +1,35 @@
-package ru.zaikin.dictionary.service;
+package ru.zaikin.Dictionary.Application.service;
 
-import org.springframework.stereotype.Component;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.zaikin.Dictionary.Application.entity.Word;
+import ru.zaikin.Dictionary.Application.repository.WordRepository;
+import org.springframework.cache.annotation.Cacheable;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@Component
+@Service
+@RequiredArgsConstructor
 public class DictionaryService {
-    private final Map<String, String> dictionary = new HashMap<>();
 
-    public DictionaryService() {
-        dictionary.put("привет", "hello");
-        dictionary.put("мир", "world");
-        dictionary.put("кот", "cat");
-        dictionary.put("собака", "dog");
-    }
+    private final WordRepository wordRepository;
 
-    public String translate(String word) {
-        return dictionary.getOrDefault(word, "isnt placed");
+    @PersistenceContext
+    EntityManager em;
+
+    @Cacheable(value = "words", key = "#russian")
+    @Transactional
+    public String translate(String russian) {
+        // логируем каждый запрос
+        em.createNativeQuery("INSERT INTO word_requests (russian) VALUES (?)")
+                .setParameter(1, russian)
+                .executeUpdate();
+
+
+        return wordRepository.findByRussian(russian)
+                .map(Word::getEnglish)
+                .orElse("not found");
     }
 }
