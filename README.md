@@ -1,35 +1,49 @@
-# dictionary-repository
+# Dictionary Repository
 
-1. Собираем jar: mvn clean package -DskipTests
-2. Делаем docker compose up --build
-3. Кормим наш кубер прописанной конфигурацией
-	I. kubectl apply -f deployment.yml
-	II. kubectl apply -f service.yml
-	III. kubectl apply -f ingress.yml
-4. Делаем портфорвард: kubectl port-forward deployment/myapp-deployment 8081:8080
-5. Если не хотим делать портфорвард и хотим поработать напрямую через Ingress Controlelr (NGINX), проделываем небольшое и простое количество действий:
+Сборка и запуск:
 
+1. Собираем JAR:
+   mvn clean package -DskipTests
 
-	1. kubectl get pods - узнаем имя пода нашего постгресса
-	2. kubectl exec -it postgres-0 -- bash - непосредственно подключаемся
-	3. psql -U postgres -d dictionary - запускаем psql
-	4. 
-	```
-	CREATE TABLE words (
-    id SERIAL PRIMARY KEY,
-    russian VARCHAR(255) UNIQUE,
-    english VARCHAR(255)
-);
+2. Запускаем Docker Compose:
+   docker compose up --build
 
-INSERT INTO words (russian, english) VALUES ('кот', 'cat'), ('собака', 'dog'), ('дом', 'house');
+3. Применяем конфигурацию Kubernetes:
+   kubectl apply -f deployment.yml
+   kubectl apply -f service.yml
+   kubectl apply -f ingress.yml
 
-CREATE TABLE word_requests (
-    id SERIAL PRIMARY KEY,
-    russian VARCHAR(255),
-    requested_at TIMESTAMP DEFAULT now()
-);
-```
+4. Портфорвард (если хотим работать локально через kubectl):
+   kubectl port-forward deployment/myapp-deployment 8081:8080
 
-и непосредственно вставляем стартовый инит, можно конечно собрать кастомный postgres  и испоьзовать отдельный PVC, но так как я указал мне было удобнее
+5. Работа напрямую через Ingress Controller (NGINX):
+   1. Получаем имя пода PostgreSQL:
+      kubectl get pods
+   2. Подключаемся к поду:
+      kubectl exec -it <postgres-pod-name> -- bash
+   3. Запускаем psql:
+      psql -U postgres -d dictionary
+   4. Создаем таблицы и добавляем стартовые данные:
+      CREATE TABLE words (
+          id SERIAL PRIMARY KEY,
+          russian VARCHAR(255) UNIQUE,
+          english VARCHAR(255)
+      );
 
-http://myapp.127.0.0.1.nip.io/dictionary/кот - по этому адрессу все будет работать, в последующем дополню другими фичами
+      INSERT INTO words (russian, english) VALUES
+          ('кот', 'cat'),
+          ('собака', 'dog'),
+          ('дом', 'house');
+
+      CREATE TABLE word_requests (
+          id SERIAL PRIMARY KEY,
+          russian VARCHAR(255),
+          requested_at TIMESTAMP DEFAULT now()
+      );
+
+   Примечание: можно собрать кастомный образ PostgreSQL и использовать отдельный PVC, но для быстрого старта этого достаточно.
+
+6. Доступ к приложению через Ingress:
+   http://myapp.127.0.0.1.nip.io/dictionary/кот
+
+В дальнейшем планируется добавление новых функций и эндпоинтов.
