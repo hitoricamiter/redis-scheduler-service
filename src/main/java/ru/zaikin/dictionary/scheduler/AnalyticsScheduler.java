@@ -1,4 +1,4 @@
-package ru.zaikin.Dictionary.Application.scheduler;
+package ru.zaikin.dictionary.scheduler;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -12,7 +12,6 @@ public class AnalyticsScheduler {
     @PersistenceContext
     private EntityManager em;
 
-    // Раз в сутки (например, в полночь)
     @Scheduled(cron = "0 0 0 * * *")
     @SchedulerLock(name = "refreshDailyRequests", lockAtMostFor = "10m", lockAtLeastFor = "5m")
     public void refreshMaterializedView() {

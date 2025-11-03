@@ -1,4 +1,4 @@
-package ru.zaikin.Dictionary.Application.entity;
+package ru.zaikin.dictionary.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,7 +1,7 @@
-package ru.zaikin.Dictionary.Application.repository;
+package ru.zaikin.dictionary.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.zaikin.Dictionary.Application.entity.Word;
+import ru.zaikin.dictionary.entity.Word;
 
 import java.util.Optional;
 
